@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login / Sign Up</title>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial;
+    }
+
+    .box {
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 5px;
+      background: #25d366;
+      color: white;
+      cursor: pointer;
+    }
+
+    .switch {
+      margin-top: 15px;
+      cursor: pointer;
+      color: #25d366;
+      font-size: 14px;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2 id="title">Login</h2>
+
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+
+  <button onclick="handleSubmit()">Login</button>
+
+  <p class="error" id="errorMsg"></p>
+
+  <p class="switch" onclick="toggleMode()">
+    Don't have an account? Sign Up
+  </p>
+</div>
+
+<script>
+  let isLogin = true;
+
+  function toggleMode() {
+    isLogin = !isLogin;
+    document.getElementById("title").innerText = isLogin ? "Login" : "Sign Up";
+    document.querySelector("button").innerText = isLogin ? "Login" : "Sign Up";
+    document.querySelector(".switch").innerText =
+      isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login";
+    document.getElementById("errorMsg").innerText = "";
+  }
+
+  function handleSubmit() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      document.getElementById("errorMsg").innerText = "Fill in all fields.";
+      return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    if (isLogin) {
+      // LOGIN
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (user) {
+        localStorage.setItem("chatUser", email);
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("errorMsg").innerText = "Invalid login details.";
+      }
+
+    } else {
+      // SIGN UP
+      const exists = users.find(u => u.email === email);
+
+      if (exists) {
+        document.getElementById("errorMsg").innerText = "Email already exists.";
+        return;
+      }
+
+      users.push({ email, password });
+      localStorage.setItem("users", JSON.stringify(users));
+      document.getElementById("errorMsg").style.color = "lightgreen";
+      document.getElementById("errorMsg").innerText = "Account created! You can login now.";
+    }
+  }
+</script>
+
+</body>
+</html>
